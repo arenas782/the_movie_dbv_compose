@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Applaudo\'s Code Challenge</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="post_no_url">This movie has no URL</string>
+    <string name="delete">Delete</string>
+    <string name="details">Details</string>
+    <string name="retry">Retry</string>
+    <string name="genres">Genres: %1$s</string>
+    <string name="release_date">Release date: %1$s</string>
+</resources>
