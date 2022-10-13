@@ -1,4 +1,4 @@
-package com.example.themoviedb.data.model
+package com.example.themoviedb.data.model.response.tvshows
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -23,6 +23,9 @@ data class TVShow(
 
     @field:Json(name = "poster_path")
     val poster_path: String? = null,
+
+    @field:Json(name = "backdrop_path")
+    val backdrop_path: String? = null,
 
     @field:Json(name = "vote_average")
     val vote_average: Float? = null,

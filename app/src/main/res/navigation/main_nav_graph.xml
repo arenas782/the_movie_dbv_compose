@@ -21,10 +21,10 @@
     <fragment
         android:id="@+id/detailsFragment"
         tools:layout="@layout/fragment_tv_show_details"
-        android:name="com.example.themoviedb.ui.tvShows.DetailsFragment"
+        android:name="com.example.themoviedb.ui.tvShows.TVShowDetailsFragment"
         android:label="DetailsFragment" >
         <argument
-            android:name="movieId"
+            android:name="tvShowId"
             app:argType="string"
             app:nullable="true" />
     </fragment>

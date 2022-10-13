@@ -1,6 +1,5 @@
-package com.example.themoviedb.data.model.response
+package com.example.themoviedb.data.model.response.tvshows
 
-import com.example.themoviedb.data.model.TVShow
 import com.squareup.moshi.Json
 
 data class LatestTVShowsResponse(

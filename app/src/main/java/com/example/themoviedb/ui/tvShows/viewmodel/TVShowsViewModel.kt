@@ -2,17 +2,13 @@ package com.example.themoviedb.ui.tvShows.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.*
 import com.example.themoviedb.data.api.TVService
-import com.example.themoviedb.data.model.TVShow
-import com.example.themoviedb.data.model.response.MovieDetailsResponse
+import com.example.themoviedb.data.model.response.tvshows.TVShow
+import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
 import com.example.themoviedb.data.repository.TVShowsRepository
 import com.example.themoviedb.ui.tvShows.Filters
-import com.example.themoviedb.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -25,28 +21,46 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
 
     val selectedFilter : MutableState<String> = mutableStateOf(Filters.TOP_RATED.value)
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
 
-    private var _movieDetails = MutableLiveData<Resource<MovieDetailsResponse>>()
-    var movieDetails : LiveData<Resource<MovieDetailsResponse>> = _movieDetails
+
 
     private val _tvShows = MutableStateFlow(emptyFlow<PagingData<TVShow>>())
     val tvshows: StateFlow<Flow<PagingData<TVShow>>> = _tvShows
 
+
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    fun updateFilter(filter : String) = effect {
+    val selectedTVShowId : MutableState<Int?> = mutableStateOf(null)
 
+    val tvShowDetails: MutableLiveData<TVShowDetailsResponse?> by lazy {
+        MutableLiveData<TVShowDetailsResponse?>()
+    }
+    val users:TVShowDetailsResponse? = null
+
+
+
+    fun updateFilter(filter : String) = effect {
             selectedFilter.value = filter
     }
+
+
+
+    fun getTVShowDetails(tvShowId : String) = effect{
+        repository.getTVShowDetails(tvShowId.toInt()).collect{
+            response -> tvShowDetails.postValue(response)
+        }
+    }
+
 
     fun newSearch()= effect {
             _isLoading.value = true
             _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(viewModelScope)
             _isLoading.value = false
         }
-
-
 
     private val _search = MutableStateFlow(null as String?)
     val search: StateFlow<String?> = _search
@@ -64,23 +78,12 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
     fun load() = effect {
         _isLoading.value = true
-        _tvShows.value =  repository.getTVShowsPerFilter(Filters.TOP_RATED.value).cachedIn(viewModelScope)        // 3
+        _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(viewModelScope)        // 3
         _isLoading.value = false
     }
 
 
 
-
-
-
-//
-//    fun getTopRatedTVShows(): Flow<PagingData<TVShow>> {
-//        val newResult: Flow<PagingData<TVShow>> =
-//            repository.getMovies().cachedIn(viewModelScope)
-//        currentResult = newResult
-//
-//        return newResult
-//    }
 
 //    fun getMovieDetails(movieId : Int) = liveData(Dispatchers.Main) {
 //            emit(Resource.loading(data = null))
@@ -93,11 +96,11 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
 //            }
 //    }
 
-//     fun deleteMovie(id : Int){
-//         CoroutineScope(Dispatchers.IO).launch {
-//             Log.e("TAG","deleting post")
-//             repository.deleteMovieById(id)
-//         }
-//    }
 
+    sealed class TVShowDetailState {
+        object Empty : TVShowDetailState()
+        object Loading : TVShowDetailState()
+        class Loaded(val data: TVShowDetailsResponse) : TVShowDetailState()
+        class Error(val message: String) : TVShowDetailState()
+    }
 }

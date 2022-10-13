@@ -60,6 +60,11 @@ object Commons {
 
 
 
+    fun mapRange(number: Float, prevRange: IntRange, newRange: IntRange) : Float {
+        val ratio = number/ (prevRange.last - prevRange.first)
+        return (ratio * (newRange.last - newRange.first) + newRange.first)
+    }
+
     fun millisToDate(date : Long) : String{
         return try {
             val sdf = SimpleDateFormat("dd/MM/yyyy")

@@ -1,15 +1,14 @@
 package com.example.themoviedb.data.remotemediator
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.themoviedb.data.api.TVService
-import com.example.themoviedb.data.model.TVShow
+import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.data.model.RemoteKeys
-import com.example.themoviedb.data.model.response.LatestTVShowsResponse
+import com.example.themoviedb.data.model.response.tvshows.LatestTVShowsResponse
 import com.example.themoviedb.data.room.AppDatabase
 import com.example.themoviedb.ui.tvShows.Filters
 import retrofit2.HttpException
@@ -24,7 +23,7 @@ class MoviesRemoteMediator @Inject constructor(private val api : TVService, priv
     override suspend fun load(loadType: LoadType, state: PagingState<Int, TVShow>): MediatorResult {
         val key = when (loadType) {
             LoadType.REFRESH -> {
-                if (appDatabase.tvShowDAO().count() > 0) return MediatorResult.Success(false)
+                if (appDatabase.tvShowDAO().countByTVShowType(filter) > 0) return MediatorResult.Success(false)
                 null
             }
             LoadType.PREPEND -> {
@@ -66,7 +65,7 @@ class MoviesRemoteMediator @Inject constructor(private val api : TVService, priv
         }
     }
 
-    private suspend fun getTVShowsFromType(tvShowType : String,page : Int):LatestTVShowsResponse{
+    private suspend fun getTVShowsFromType(tvShowType : String,page : Int): LatestTVShowsResponse {
         return when (tvShowType) {
             Filters.POPULAR.value -> api.popularTVShows(page)
             Filters.AIRING.value -> api.airingTodayTVShows(page)

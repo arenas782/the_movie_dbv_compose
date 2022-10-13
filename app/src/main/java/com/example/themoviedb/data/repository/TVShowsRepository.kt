@@ -6,21 +6,23 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.themoviedb.data.api.TVService
-import com.example.themoviedb.data.model.TVShow
-import com.example.themoviedb.data.model.response.MovieDetailsResponse
+import com.example.themoviedb.data.model.response.tvshows.TVShow
+import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
 import com.example.themoviedb.data.remotemediator.MoviesRemoteMediator
 import com.example.themoviedb.data.room.AppDatabase
-import com.example.themoviedb.ui.tvShows.Filters
+import com.example.themoviedb.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 
 @OptIn(ExperimentalPagingApi::class)
 class TVShowsRepository @Inject constructor(private val db: AppDatabase, private val TVService: TVService) {
 
-
-    suspend fun getMovieDetails(tvShowId : Int):MovieDetailsResponse {
-        return TVService.getTVShowDetails(tvShowId)
+    suspend fun getTVShowDetails(tvShowId : Int): Flow<TVShowDetailsResponse>{
+        return flow {
+            emit(TVService.getTVShowDetails(tvShowId))
+        }
     }
 
 

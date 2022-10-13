@@ -2,16 +2,9 @@ package com.example.themoviedb.utils
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
-
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.example.themoviedb.ui.tvShows.adapter.TVShowAdapter
-import com.example.themoviedb.ui.tvShows.adapter.SwipeGesture
-import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 
 //
 //@BindingAdapter(value= ["bind:adapter", "bind:viewmodel"],requireAll = true)
