@@ -1,5 +1,6 @@
 package com.example.themoviedb.ui.tvShows.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -12,10 +13,8 @@ import com.example.themoviedb.data.repository.TVShowsRepository
 import com.example.themoviedb.ui.tvShows.Filters
 import com.example.themoviedb.ui.tvShows.SearchWidgetState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -71,23 +70,28 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
 
 
+    fun deleteSearchResults()= effect{
+        repository.deleteSearchResults()
+    }
     fun newSearch()= effect {
-            _isLoading.value = true
-            _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)
-            _isLoading.value = false
-        }
-
-    private val _search = MutableStateFlow(null as String?)
-    val search: StateFlow<String?> = _search
-
-    fun search(term: String?) {
-        _search.value = term
+        repository.deleteSearchResults()
+        _isLoading.value = true
+        _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)
+        _isLoading.value = false
     }
 
 
 
-
-
+    private fun performSearching(query : String) : Flow<PagingData<TVShow>> {
+        Log.e("TAG","Performing search")
+        viewModelScope.launch (Dispatchers.IO){
+            if(query != "")
+                _tvShows.value = repository.getTVShowsPerQuery(query)
+            else
+                _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)        // 3
+        }
+        return _tvShows.value
+    }
     private fun effect(block: suspend () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) { block() }    // 4
     }
@@ -97,12 +101,17 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
         _isLoading.value = false
     }
 
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     fun search() = effect {
-        if(_searchTextState.value != "")
-        _tvShows.value = repository.getTVShowsPerQuery(_searchTextState.value)
-        else
-            _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)        // 3
+
+        _searchTextState.debounce (1000)
+            .distinctUntilChanged()
+            .flatMapLatest {
+                performSearching(it)
+            }
+            .launchIn(viewModelScope)
     }
+
 
 
 

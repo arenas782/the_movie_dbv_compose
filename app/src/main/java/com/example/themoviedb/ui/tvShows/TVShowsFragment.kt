@@ -84,6 +84,7 @@ class TVShowsFragment  : BaseFragment(){
                 searchWidgetState = searchWidgetState,
                 searchTextState = searchTextState.value,
                 onTextChanged = {
+                                viewModel.deleteSearchResults()
                                 viewModel.updateSearchTextState(it)
                                 viewModel.search()
                 },

@@ -66,6 +66,14 @@ class TVShowsRepository @Inject constructor(private val db: AppDatabase, private
             pagingSourceFactory = pagingSourceFactory).flow
     }
 
+    suspend fun deleteSearchResults(){
+        try {
+            db.tvShowDAO().deleteSearches()
+        }catch (e : Exception){
+            Log.e("TAG", "$e.localizedMessage")
+        }
+    }
+
     suspend fun deleteMovieById(id : Int) {
         try {
             db.tvShowDAO().deleteTVShowById(id)
