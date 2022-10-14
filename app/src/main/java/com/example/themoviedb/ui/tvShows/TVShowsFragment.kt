@@ -41,6 +41,7 @@ import com.example.themoviedb.databinding.FragmentTvShowsBinding
 import com.example.themoviedb.ui.base.BaseFragment
 import com.example.themoviedb.ui.composables.ChipFilter
 import com.example.themoviedb.ui.composables.LoadingIndicator
+import com.example.themoviedb.ui.composables.SearchAppBar
 import com.example.themoviedb.ui.composables.TVShowItem
 import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -76,21 +77,59 @@ class TVShowsFragment  : BaseFragment(){
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @Composable
     fun tvShowsMain(){
+        val searchWidgetState by viewModel.searchWidgetState
+        val searchTextState = viewModel.searchTextState.collectAsState()
         Scaffold(
-            topBar = { TopAppBar() },
+            topBar = { TVShowsAppBar(
+                searchWidgetState = searchWidgetState,
+                searchTextState = searchTextState.value,
+                onTextChanged = {
+                                viewModel.updateSearchTextState(it)
+                                viewModel.search()
+                },
+                onCloseClicked = {
+                                 //viewModel.updateSearchTextState("")
+                                   // viewModel.load()
+                                viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
+                },
+            )},
             content = {
                 MainComponent()
             }
         )
     }
 
+    @Composable
+    fun TVShowsAppBar(
+        searchWidgetState: SearchWidgetState,
+        searchTextState : String,
+        onTextChanged : (String) -> Unit,
+        onCloseClicked : () -> Unit,
+    ){
+        when (searchWidgetState){
+            SearchWidgetState.CLOSED -> {
+                TopAppBar()
+            }
+            SearchWidgetState.OPENED -> {
+                SearchAppBar(
+                    text = searchTextState,
+                    onTextChanged = onTextChanged,
+                    onCloseClicked = onCloseClicked,
+                    onSearchClicked = {}
+                )
+
+            }
+        }
+    }
 
     @Composable
     private fun TopAppBar() {
         TopAppBar(
             title = { Text(text = "TV Shows") },
             actions = {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    viewModel.updateSearchWidgetState(SearchWidgetState.OPENED)
+                }) {
                     Icon(imageVector = Icons.Filled.Search, contentDescription = "Buscar")
                 }
                 IconButton(onClick = { }) {
@@ -140,6 +179,11 @@ class TVShowsFragment  : BaseFragment(){
         context: Context) {
         val tvShowsList: LazyPagingItems<TVShow> = items.collectAsLazyPagingItems()
         val listState: LazyGridState = rememberLazyGridState()
+
+        val searchTextState = viewModel.searchTextState.collectAsState()
+
+        Log.e("Buscando...",searchTextState.value)
+        Log.e("Items",tvShowsList.itemSnapshotList.toString())
 
         LazyVerticalGrid( columns = GridCells.Adaptive(minSize = 140.dp), state = listState ) {
                 items(tvShowsList.itemCount) { item ->
@@ -191,12 +235,18 @@ class TVShowsFragment  : BaseFragment(){
         val selectedFilter = viewModel.selectedFilter.value
         LazyRow(modifier = Modifier.padding(top = 10.dp, start = 8.dp, bottom = 8.dp)){
             items(Filters.values()){ filter ->
-                ChipFilter(
-                    filterName = filter.value,
-                    isSelected = selectedFilter == filter.value,
-                    onSelectedCategoryChanged ={ viewModel.updateFilter(filter.value)},
-                    onExecuteSearch = viewModel::newSearch
-                )
+                if (filter.value != Filters.SEARCH.value){
+                    ChipFilter(
+                        filterName = filter.value,
+                        isSelected = selectedFilter == filter.value,
+                        onSelectedCategoryChanged ={
+                            viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
+                            viewModel.updateSearchTextState("")
+                            viewModel.updateFilter(filter.value)
+                        },
+                        onExecuteSearch = viewModel::newSearch
+                    )
+                }
             }
         }
     }

@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @ExperimentalPagingApi
 class MoviesRemoteMediator @Inject constructor(private val api : TVService, private val appDatabase: AppDatabase,
-                                               private val filter : String): RemoteMediator<Int, TVShow>() {
+                                               private val filter : String,private val query: String?): RemoteMediator<Int, TVShow>() {
 
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, TVShow>): MediatorResult {
@@ -39,8 +39,9 @@ class MoviesRemoteMediator @Inject constructor(private val api : TVService, priv
                 if (key.isEndReached) return MediatorResult.Success(endOfPaginationReached = true)
             }
             val page: Int = key?.nextKey ?: 1
-            val apiResponse = getTVShowsFromType(filter,page)
+            val apiResponse = getTVShowsFromType(tvShowType = filter, page = page, query = query)
             val moviesList = apiResponse.results
+
 
             val endOfPaginationReached =
                 apiResponse.results.isEmpty()
@@ -65,11 +66,12 @@ class MoviesRemoteMediator @Inject constructor(private val api : TVService, priv
         }
     }
 
-    private suspend fun getTVShowsFromType(tvShowType : String,page : Int): LatestTVShowsResponse {
+    private suspend fun getTVShowsFromType(tvShowType : String,page : Int,query : String? = null): LatestTVShowsResponse {
         return when (tvShowType) {
             Filters.POPULAR.value -> api.popularTVShows(page)
             Filters.AIRING.value -> api.airingTodayTVShows(page)
             Filters.ON_TV.value -> api.onTheAirTVShows(page)
+            Filters.SEARCH.value -> api.searchTVShows(query.toString(),page)
             else -> api.topRatedTVShows(page)
         }
     }

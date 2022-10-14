@@ -3,6 +3,7 @@ package com.example.themoviedb.ui.composables
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -21,7 +22,7 @@ fun ChipFilter(
     Surface(
         modifier = Modifier.padding(end = 8.dp),
         elevation = 8.dp,
-        shape = MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(50), // = 50% percent
         color = if (!isSelected) Color.LightGray else MaterialTheme.colors.primary
     ){
         Row(
@@ -36,7 +37,7 @@ fun ChipFilter(
             Text(
                 text = filterName,
                 color = Color.White,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(vertical = 6.dp, horizontal = 12.dp)
             )
         }
     }

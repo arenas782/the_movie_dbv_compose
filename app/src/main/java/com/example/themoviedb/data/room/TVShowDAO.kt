@@ -13,11 +13,17 @@ interface TVShowDAO {
     @Query("SELECT * FROM tvshow where tv_show_type= :tvShowType order by created_at asc")
     fun getTVShowsPerType(tvShowType : String): PagingSource<Int, TVShow>
 
+    @Query("SELECT * FROM tvshow where tv_show_type= 'Search' and name like '%'||:query||'%'  order by created_at asc")
+    fun getTVShowsPerQuery(query : String): PagingSource<Int, TVShow>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTVShow(TVShow : TVShow?)
 
     @Query("DELETE FROM tvshow WHERE id = :id")
     suspend fun deleteTVShowById(id: Int)
+
+    @Query("DELETE FROM tvshow WHERE tv_show_type = 'Search'")
+    suspend fun deleteSearches()
 
     suspend fun insertAllTVShows(TVShows: List<TVShow?>?, tvShowType: String){
 
@@ -31,4 +37,5 @@ interface TVShowDAO {
 
     @Query("SELECT COUNT(id) from tvshow where tv_show_type= :tvShowType")
     suspend fun countByTVShowType(tvShowType : String): Int
+
 }

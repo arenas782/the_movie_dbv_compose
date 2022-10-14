@@ -5,4 +5,5 @@ enum class Filters(val value : String){
     POPULAR("Popular"),
     ON_TV("On TV"),
     AIRING("Airing"),
+    SEARCH("Search"),
 }

@@ -1,6 +1,7 @@
 package com.example.themoviedb.ui.tvShows.viewmodel
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import androidx.paging.*
@@ -9,8 +10,10 @@ import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
 import com.example.themoviedb.data.repository.TVShowsRepository
 import com.example.themoviedb.ui.tvShows.Filters
+import com.example.themoviedb.ui.tvShows.SearchWidgetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,22 +27,34 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _searchWidgetState : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
+    val searchWidgetState : State<SearchWidgetState> = _searchWidgetState
+
+    private val _searchTextState = MutableStateFlow("")
+    val searchTextState  = _searchTextState.asStateFlow()
+
+    fun updateSearchWidgetState(newValue : SearchWidgetState){
+        _searchWidgetState.value = newValue
+    }
+
+    fun updateSearchTextState (newValue: String){
+        _searchTextState.value = newValue
+    }
+
 
 
     private val _tvShows = MutableStateFlow(emptyFlow<PagingData<TVShow>>())
-    val tvshows: StateFlow<Flow<PagingData<TVShow>>> = _tvShows
+    val tvshows: StateFlow<Flow<PagingData<TVShow>>> = _tvShows.asStateFlow()
 
 
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    val selectedTVShowId : MutableState<Int?> = mutableStateOf(null)
 
     val tvShowDetails: MutableLiveData<TVShowDetailsResponse?> by lazy {
         MutableLiveData<TVShowDetailsResponse?>()
     }
-    val users:TVShowDetailsResponse? = null
 
 
 
@@ -58,7 +73,7 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
 
     fun newSearch()= effect {
             _isLoading.value = true
-            _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(viewModelScope)
+            _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)
             _isLoading.value = false
         }
 
@@ -78,8 +93,12 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
     fun load() = effect {
         _isLoading.value = true
-        _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(viewModelScope)        // 3
+        _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)        // 3
         _isLoading.value = false
+    }
+
+    fun search() = effect {
+        _tvShows.value = repository.getTVShowsPerQuery(_searchTextState.value)
     }
 
 

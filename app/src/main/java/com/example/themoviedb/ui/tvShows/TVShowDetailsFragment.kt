@@ -141,14 +141,12 @@ class TVShowDetailsFragment : BaseFragment() {
 //                    )
 //
 
-                    RatingBar(rating = tvShowDetails.vote_average, modifier = Modifier.padding(top=160.dp, start = 16.dp).
+                    RatingBar(rating = tvShowDetails.vote_average*0.5f, modifier = Modifier.padding(top=160.dp, start = 16.dp).
                     alpha(if(progress < 1) 0f else 1f))
                     IconButton(onClick = {
-
                     }) {
                         Icon(Icons.Default.ArrowBack, "Open/Close menu", tint = Color.White)
                     }
-
                 }) {
 
 

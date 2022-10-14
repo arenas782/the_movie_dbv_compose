@@ -7,18 +7,22 @@ import retrofit2.http.*
 
 
 interface   TVService {
-    @GET("popular?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
+    @GET("tv/popular?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
     suspend fun popularTVShows(@Query("page") page : Int): LatestTVShowsResponse
 
-    @GET("on_the_air?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
+    @GET("tv/on_the_air?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
     suspend fun onTheAirTVShows(@Query("page") page : Int): LatestTVShowsResponse
 
-    @GET("airing_today?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
+    @GET("tv/airing_today?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
     suspend fun airingTodayTVShows(@Query("page") page : Int): LatestTVShowsResponse
 
-    @GET("top_rated?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
+    @GET("tv/top_rated?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
     suspend fun topRatedTVShows(@Query("page") page : Int): LatestTVShowsResponse
 
-    @GET("{tvShowId}?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
+    @GET("tv/{tvShowId}?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US")
     suspend fun getTVShowDetails(@Path("tvShowId") tvShowId : Int): TVShowDetailsResponse
+
+    @GET("search/tv?api_key=f52f4a0bd6f7db6d9bab750909ed1736&language=en-US&page=1&include_adult=false")
+    suspend fun searchTVShows(@Query("query") query : String,@Query("page") page : Int): LatestTVShowsResponse
+
 }
