@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,17 +24,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.themoviedb.R
 
 import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
+import com.example.themoviedb.data.model.response.tvshows.TVShowSeason
 import com.example.themoviedb.databinding.FragmentTvShowDetailsBinding
 import com.example.themoviedb.ui.base.BaseFragment
 import com.example.themoviedb.ui.composables.RatingBar
+import com.example.themoviedb.ui.theme.AppTheme
 import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 import com.example.themoviedb.utils.Constants
 import com.example.themoviedb.utils.Resource
@@ -63,12 +69,11 @@ class TVShowDetailsFragment : BaseFragment() {
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    MainContent()
-
+                AppTheme(darkTheme = isSystemInDarkTheme()) {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        MainContent()
+                    }
                 }
-
-
             }
         }
         return view
@@ -92,7 +97,7 @@ class TVShowDetailsFragment : BaseFragment() {
         if (tvShowDetails!= null){
             val seasons = tvShowDetails.seasons
             CollapsingToolbarScaffold(
-                modifier = Modifier,
+                modifier = Modifier.background(MaterialTheme.colors.background),
                 state = state,
                 scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
                 toolbar = {
@@ -122,34 +127,22 @@ class TVShowDetailsFragment : BaseFragment() {
                         tvShowDetails.name,
                         style = TextStyle(color = Color.White, fontSize = textSize),
                         modifier = Modifier
-                            .padding(start = 16.dp,bottom= 40.dp,top = 16.dp)
+                            .padding(start = 16.dp, bottom = 40.dp, top = 16.dp)
                             .road(
                                 whenCollapsed = Alignment.TopCenter,
                                 whenExpanded = Alignment.BottomStart
                             )
                     )
-//                    Text(
-//                        "disappear",
-//                        style = TextStyle(color = Color.White, fontSize = 12.sp),
-//                        modifier = Modifier
-//                            .padding(bottom = 64.dp, start = 18.dp)
-//                            .road(
-//                                whenCollapsed = Alignment.TopCenter,
-//                                whenExpanded = Alignment.BottomStart
-//                            )
-//                            .alpha(if (progress < 1) 0f else 1f)
-//                    )
-//
 
-                    RatingBar(rating = tvShowDetails.vote_average*0.5f, modifier = Modifier.padding(top=160.dp, start = 16.dp).
-                    alpha(if(progress < 1) 0f else 1f))
+                    RatingBar(rating = tvShowDetails.vote_average*0.5f, modifier = Modifier
+                        .padding(top = 160.dp, start = 16.dp)
+                        .alpha(if (progress < 1) 0f else 1f))
                     IconButton(onClick = {
+                        findNavController().navigateUp()
                     }) {
                         Icon(Icons.Default.ArrowBack, "Open/Close menu", tint = Color.White)
                     }
                 }) {
-
-
 
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
@@ -167,23 +160,59 @@ class TVShowDetailsFragment : BaseFragment() {
                                 .fillMaxWidth()
                                 .padding(8.dp),
                             text = tvShowDetails.overview,
-                            style = TextStyle(color = Color.Black, fontSize = 14.sp),
+                            style = TextStyle( fontSize = 14.sp),
                         )
                     }
                     items(seasons) { season ->
-                        
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text =season.name.toString(), modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            )
-                        }
+                        if (season.episode_count!! > 0)
+                            TVShowSeason(season = season)
                     }
+                }
+            }
+        }
+    }
+    @Composable
+    fun TVShowSeason(season : TVShowSeason){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .height(160.dp)
+        ) {
+            Row(){
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data( Constants.BASE_URL_POSTS.plus(season.poster_path)).
+                    crossfade(true).
+                    placeholder(R.drawable.placeholder).
+                    build(),
+
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.width(120.dp)
+                )
+                Column() {
+                    Text(
+                        text =season.name.toString(), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = TextStyle(fontSize = 18.sp)
+                    )
+
+                    Text(
+                        text ="${season.episode_count} episodes", modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        style = TextStyle(color = MaterialTheme.colors.primary)
+                    )
+                    Text(
+                        text =season.overview.toString(), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp, horizontal = 16.dp),
+                        style = TextStyle(fontSize = 12.sp),
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }

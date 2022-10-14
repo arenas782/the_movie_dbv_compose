@@ -18,11 +18,17 @@ data class TVShowSeason(
     val name: String? = null,
 
 
+    @field:Json(name = "episode_count")
+    val episode_count: Int? = null,
+
+
     @field:Json(name = "overview")
     val overview: String? = null,
 
     @field:Json(name = "poster_path")
     val poster_path: String? = null,
+
+
 
 
 

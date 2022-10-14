@@ -19,19 +19,21 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 
 
-@OptIn(ExperimentalTextApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchAppBar(
     text : String,
     onTextChanged : (String) -> Unit,
     onCloseClicked : () -> Unit,
-    onSearchClicked : (String) -> Unit
 ){
-
-
     Surface (
         modifier = Modifier
             .fillMaxWidth()
@@ -41,11 +43,10 @@ fun SearchAppBar(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-
             modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .padding( end = 16.dp),) {
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(end = 16.dp),) {
             IconButton(modifier = Modifier
                 .alpha(ContentAlpha.medium),
                 onClick = {
@@ -59,89 +60,48 @@ fun SearchAppBar(
             }
 
             BasicTextField(
-
                 value = text,
+                maxLines = 1,
                 onValueChange = { onTextChanged(it) },
                 decorationBox = { innerTextField ->
                     Row(
                         Modifier
-                            .background(Color.White, RoundedCornerShape(percent = 20))
-                            .fillMaxWidth()
-
-
+                            .background(MaterialTheme.colors.surface, RoundedCornerShape(percent = 20))
+                            .fillMaxWidth().padding(4.dp)
                     ) {
 
                         if (text.isEmpty()) {
+                            val focusRequester = FocusRequester()
+                            val keyboardController = LocalSoftwareKeyboardController.current
+                            DisposableEffect(Unit) {
+                                focusRequester.requestFocus()
+                                onDispose { }
+                            }
+
                             Text("Search",
-                            style = TextStyle(color = Color.Gray)
+                            style = TextStyle(color = Color.Gray),
+                                modifier = Modifier.focusRequester(focusRequester)
+                                    .onFocusChanged {
+                                        if (it.isFocused) {
+                                            keyboardController?.show()
+                                        }
+                                    }
+
                             )
                         }
                         innerTextField()  //<-- Add this
                     }
                 },
+
             )
-
-//            TextField(
-//                modifier =  Modifier.background(Color.White).height(40.dp).padding(0.dp),
-//                shape = MaterialTheme.shapes.small.copy(bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize),
-//                textStyle = TextStyle(fontSize = 4.sp, platformStyle = PlatformTextStyle(
-//                    includeFontPadding = false,
-//                )),
-//                onValueChange ={ onTextChanged(it) },
-//                value = text,
-//                singleLine = true,
-//                placeholder = {
-//                    Text(
-//                        modifier = Modifier
-//                            .alpha(ContentAlpha.medium),
-//                        style = TextStyle(fontSize = 4.sp, platformStyle = PlatformTextStyle(
-//                            includeFontPadding = false,
-//                        )
-//                        ),
-//                        text = "Search for a TV Show",
-//                        color = Color.Black
-//                    )
-//                },
-//
-//                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-//                keyboardActions = KeyboardActions(
-//                    onSearch =  {
-//                        onSearchClicked(text)
-//                    }
-//                )
-//            )
-
         }
-//        TextField(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                ,
-//            onValueChange ={ onTextChanged(it) },
-//            value = text,
-//            singleLine = true,
-//            placeholder = {
-//                Text(
-//                    modifier = Modifier
-//                        .alpha(ContentAlpha.medium),
-//                    text = "Search for a TV Show",
-//                    color = Color.White
-//                )
-//            },
-//            leadingIcon = {
-//
-//            },
-//            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-//            keyboardActions = KeyboardActions(
-//                onSearch =  {
-//                    onSearchClicked(text)
-//                }
-//            )
-//        )
     }
+
 }
+
 
 @Composable
 @Preview
 fun SearchAppBarPreview(){
-    SearchAppBar(text = "", onTextChanged = {}, onCloseClicked = {  }, onSearchClicked ={} )
+    SearchAppBar(text = "", onTextChanged = {}, onCloseClicked = {  })
 }

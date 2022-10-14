@@ -2,23 +2,22 @@ package com.example.themoviedb.ui.tvShows
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -27,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
@@ -35,7 +35,6 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.themoviedb.R
 import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.databinding.FragmentTvShowsBinding
 import com.example.themoviedb.ui.base.BaseFragment
@@ -43,6 +42,8 @@ import com.example.themoviedb.ui.composables.ChipFilter
 import com.example.themoviedb.ui.composables.LoadingIndicator
 import com.example.themoviedb.ui.composables.SearchAppBar
 import com.example.themoviedb.ui.composables.TVShowItem
+import com.example.themoviedb.ui.theme.AppTheme
+import com.example.themoviedb.ui.theme.Purple500
 import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -56,8 +57,6 @@ class TVShowsFragment  : BaseFragment(){
     private var _binding: FragmentTvShowsBinding? = null
     private val binding get() = _binding!!
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,14 +68,16 @@ class TVShowsFragment  : BaseFragment(){
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                tvShowsMain()
+                AppTheme(darkTheme = isSystemInDarkTheme()) {
+                    TVShowsMain()
+                }
             }
         }
         return view
     }
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @Composable
-    fun tvShowsMain(){
+    fun TVShowsMain(){
         val searchWidgetState by viewModel.searchWidgetState
         val searchTextState = viewModel.searchTextState.collectAsState()
         Scaffold(
@@ -89,8 +90,6 @@ class TVShowsFragment  : BaseFragment(){
                                 viewModel.search()
                 },
                 onCloseClicked = {
-                                 //viewModel.updateSearchTextState("")
-                                   // viewModel.load()
                                 viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
                 },
             )},
@@ -116,9 +115,7 @@ class TVShowsFragment  : BaseFragment(){
                     text = searchTextState,
                     onTextChanged = onTextChanged,
                     onCloseClicked = onCloseClicked,
-                    onSearchClicked = {}
                 )
-
             }
         }
     }
@@ -126,6 +123,7 @@ class TVShowsFragment  : BaseFragment(){
     @Composable
     private fun TopAppBar() {
         TopAppBar(
+
             title = { Text(text = "TV Shows") },
             actions = {
                 IconButton(onClick = {
@@ -136,14 +134,15 @@ class TVShowsFragment  : BaseFragment(){
                 IconButton(onClick = { }) {
                     Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Buscar")
                 }
-            }
+            },
+            backgroundColor = Purple500,
+            contentColor = Color.White
         )
     }
 
 
-
     @Composable
-    fun getTVShows(modifier: Modifier = Modifier, viewModel:TVShowsViewModel, context: Context) {
+    fun GetTVShows( viewModel:TVShowsViewModel) {
         val tvShows by viewModel.tvshows.collectAsState()
         val isLoading by viewModel.isLoading.collectAsState()
         val isRefreshing = viewModel.isRefreshing.collectAsState().value
@@ -151,11 +150,9 @@ class TVShowsFragment  : BaseFragment(){
 
         when {
             isLoading -> {
-                Log.e("TAG","cargando")
                 LoadingIndicator()
             }
             else ->{
-                Log.e("TAG","mostrando")
                 SwipeRefresh(
                     state = swipeRefreshState,
                     onRefresh = viewModel::newSearch,
@@ -166,7 +163,7 @@ class TVShowsFragment  : BaseFragment(){
                             horizontal = 0.dp
                         )
                 ){
-                    tvShowsList(modifier, items = tvShows, context)
+                    tvShowsList( items = tvShows)
                 }
             }
         }
@@ -175,31 +172,24 @@ class TVShowsFragment  : BaseFragment(){
 
     @Composable
     fun tvShowsList(
-        modifier: Modifier,
-        items: Flow<PagingData<TVShow>>,
-        context: Context) {
+        items: Flow<PagingData<TVShow>>) {
         val tvShowsList: LazyPagingItems<TVShow> = items.collectAsLazyPagingItems()
         val listState: LazyGridState = rememberLazyGridState()
 
-        val searchTextState = viewModel.searchTextState.collectAsState()
-
-        Log.e("Buscando...",searchTextState.value)
-        Log.e("Items",tvShowsList.itemSnapshotList.toString())
-
-        LazyVerticalGrid( columns = GridCells.Adaptive(minSize = 140.dp), state = listState ) {
+        LazyVerticalGrid( columns = GridCells.Fixed(2), state = listState ) {
                 items(tvShowsList.itemCount) { item ->
                     item.let { index ->
                         tvShowsList[index]?.let {
                             TVShowItem(tvShowData = it, onClick = {
+                                viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
+                                viewModel.updateSearchTextState("")
                                 findNavController().navigate(TVShowsFragmentDirections.actionMainFragmentToDetailsFragment(it.id.toString()))
                             })
                         }
                     }
                 }
                 tvShowsList.apply {
-                    //Log.e("Mediator state","${loadState.mediator}")
                     when {
-
                         loadState.refresh is LoadState.Loading -> {
                             //You can add modifier to manage load state when first time response page is loading
                       //      Log.e("TAG","loading for the first time")
@@ -223,16 +213,15 @@ class TVShowsFragment  : BaseFragment(){
     @Composable
     fun MainComponent(){
         Column {
-            filters()
-
-            getTVShows(viewModel = viewModel, context = requireContext())
+            Filters()
+            GetTVShows(viewModel = viewModel)
         }
     }
 
 
 
     @Composable
-    fun filters(){
+    fun Filters(){
         val selectedFilter = viewModel.selectedFilter.value
         LazyRow(modifier = Modifier.padding(top = 10.dp, start = 8.dp, bottom = 8.dp)){
             items(Filters.values()){ filter ->
