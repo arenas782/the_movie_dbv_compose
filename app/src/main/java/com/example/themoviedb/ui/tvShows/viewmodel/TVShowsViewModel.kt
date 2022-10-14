@@ -98,7 +98,10 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
 
     fun search() = effect {
+        if(_searchTextState.value != "")
         _tvShows.value = repository.getTVShowsPerQuery(_searchTextState.value)
+        else
+            _tvShows.value =  repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)        // 3
     }
 
 
