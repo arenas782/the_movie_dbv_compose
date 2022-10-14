@@ -1,0 +1,24 @@
+1. Display a splash screen as soon as the app starts. ⏱
+2. Display a list of TV Shows: ✅
+    a. Every item should contain a rating, photo, and title of the show. ✅
+    b. The User should be able to filter TV Shows by Popular, Top Rated, On TV, or Airing Today. ✅
+    c. Lists should be paginated. ✅
+3. Display a TV Show Details Screen: ✅
+    d. After tapping on a list item, the user should be able to see the shows details. ✅
+    e. The screen header view must contain the shows poster, its rating, and summary. ✅
+    f. The body of the screen should display a list containing all seasons of the show ✅
+
+Things to consider 
+You should persist all information possible on the local cache (use Room). ✅
+Internet connection errors should be handled. ⏱
+You should cache images and display a placeholder while loading. ✅
+Meaningful unit tests must be added.  ❌
+Code quality, architecture, and project structure will be evaluated.
+
+Bonus: 
+Reach 70% of unit test coverage throughout all the project’s codebase.   ❌
+Add tablet support.  ❌
+Use a Collapsing Toolbar animation on the details screen ✅
+Use of at least one animation  ⏱
+Manage light and Dark Theme ✅
+Store Favorite TV Shows on the local database  ⏱
