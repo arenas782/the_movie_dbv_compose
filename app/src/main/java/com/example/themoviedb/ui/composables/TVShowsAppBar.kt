@@ -10,11 +10,12 @@ fun TVShowsAppBar(
     searchTextState : String,
     onTextChanged : (String) -> Unit,
     onCloseClicked : () -> Unit,
-    viewModel : TVShowsViewModel
+    viewModel : TVShowsViewModel,
+    onProfileButtonClicked : () -> Unit
 ){
     when (searchWidgetState){
         SearchWidgetState.CLOSED -> {
-            CustomTopAppBar(viewModel)
+            CustomTopAppBar(viewModel,onProfileButtonClicked)
         }
         SearchWidgetState.OPENED -> {
             SearchAppBar(

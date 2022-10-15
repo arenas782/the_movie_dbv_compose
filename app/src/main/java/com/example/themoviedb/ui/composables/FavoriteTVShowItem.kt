@@ -1,5 +1,6 @@
 package com.example.themoviedb.ui.composables
 
+
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -26,14 +27,15 @@ import com.example.themoviedb.utils.Constants
 
 
 @Composable
-fun TVShowItem(tvShowData: TVShow, onClick: () -> Unit) {
+fun FavoriteTVShowItem(tvShowData: TVShow, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(
                 5.dp
             )
             .clickable(onClick = onClick)
-            .height(300.dp),
+            .width(200.dp)
+            .fillMaxHeight(),
         shape = RoundedCornerShape(15.dp),
         elevation = 12.dp,
     ) {

@@ -82,7 +82,10 @@ class TVShowsFragment  : BaseFragment(){
                 onCloseClicked = {
                                 viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
                 },
-                viewModel = viewModel
+                viewModel = viewModel,
+                onProfileButtonClicked = {
+                    findNavController().navigate(TVShowsFragmentDirections.actionMoviesFragmentToProfileFragment())
+                }
             )},
             content = {
                 MainComponent()

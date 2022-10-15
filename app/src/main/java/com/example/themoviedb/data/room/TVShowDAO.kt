@@ -24,6 +24,9 @@ interface TVShowDAO {
     @Query("DELETE FROM tvshow WHERE tv_show_type = 'Search'")
     suspend fun deleteSearches()
 
+    @Query("DELETE FROM tvshow")
+    suspend fun clearDB()
+
     @Query("UPDATE tvshow set is_favorite = :isFavorite where id = :tvShowId" )
     suspend fun updateFavorite(tvShowId : Int, isFavorite : Int)
 

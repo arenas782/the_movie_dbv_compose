@@ -87,7 +87,18 @@ class TVShowsRepository @Inject constructor(private val db: AppDatabase, private
         }
     }
 
+    suspend fun clearDB() {
+        try {
+            db.tvShowDAO().clearDB()
+        } catch (e: Exception) {
+            Log.e("TAG", "$e.localizedMessage")
+        }
+    }
     fun getCurrentTVShow(tvShowId : Int) : Flow<TVShow> {
         return db.tvShowDAO().getCurrentTVShow(tvShowId)
+    }
+
+    fun getFavoriteTVShows() : Flow<List<TVShow>> {
+        return db.tvShowDAO().getFavorites(1)
     }
 }
