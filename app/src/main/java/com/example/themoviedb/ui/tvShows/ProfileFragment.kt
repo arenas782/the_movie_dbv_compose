@@ -1,16 +1,12 @@
 package com.example.themoviedb.ui.tvShows
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,7 +44,6 @@ import com.example.themoviedb.databinding.FragmentProfileBinding
 import com.example.themoviedb.ui.LoginScreenActivity
 import com.example.themoviedb.ui.base.BaseFragment
 import com.example.themoviedb.ui.composables.FavoriteTVShowItem
-import com.example.themoviedb.ui.composables.TVShowItem
 import com.example.themoviedb.ui.theme.AppTheme
 import com.example.themoviedb.ui.tvShows.viewmodel.ProfileViewModel
 import com.example.themoviedb.utils.Constants

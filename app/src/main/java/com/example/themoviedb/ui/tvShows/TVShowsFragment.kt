@@ -94,9 +94,6 @@ class TVShowsFragment  : BaseFragment(){
     }
 
 
-
-
-
     @Composable
     fun GetTVShows( viewModel:TVShowsViewModel) {
         val tvShows by viewModel.tvshows.collectAsState()

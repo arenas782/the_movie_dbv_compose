@@ -16,7 +16,6 @@ import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 @Composable
 fun CustomTopAppBar(viewModel : TVShowsViewModel,onProfileButtonClicked :() ->Unit) {
     androidx.compose.material.TopAppBar(
-
         title = { Text(text = "TV Shows") },
         actions = {
             IconButton(onClick = {

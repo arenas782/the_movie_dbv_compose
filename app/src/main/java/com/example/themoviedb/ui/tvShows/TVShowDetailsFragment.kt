@@ -143,7 +143,6 @@ class TVShowDetailsFragment : BaseFragment() {
 
                         }
                         IconButton(onClick = {
-                            Log.e("Favorite","click")
                             viewModel.updateFavorite()
                         }) {
                             if (currentTVShow != null) {
@@ -165,7 +164,6 @@ class TVShowDetailsFragment : BaseFragment() {
                             text = "Summary",
                             style = TextStyle(color = MaterialTheme.colors.primary, fontSize = 18.sp),
                         )
-
                     }
 
                     item {
@@ -185,5 +183,4 @@ class TVShowDetailsFragment : BaseFragment() {
             }
         }
     }
-
 }

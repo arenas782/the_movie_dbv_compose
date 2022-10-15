@@ -20,7 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepository,private val service : TVService) : ViewModel() {
 
-
     val selectedFilter : MutableState<String> = mutableStateOf(Filters.TOP_RATED.value)
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -32,7 +31,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     private val _searchTextState = MutableStateFlow("")
     val searchTextState  = _searchTextState.asStateFlow()
 
-
     fun updateSearchWidgetState(newValue : SearchWidgetState){
         _searchWidgetState.value = newValue
     }
@@ -41,21 +39,15 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
         _searchTextState.value = newValue
     }
 
-
     val currentTVShowDetails : MutableLiveData<TVShow?> by lazy {
         MutableLiveData<TVShow?>()
     }
 
-
-
     private val _tvShows = MutableStateFlow(emptyFlow<PagingData<TVShow>>())
     val tvshows: StateFlow<Flow<PagingData<TVShow>>> = _tvShows.asStateFlow()
 
-
     private val _localTVShow = MutableStateFlow <Int?>(null)
     val localTVShow = _localTVShow.asStateFlow()
-
-
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -64,8 +56,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     val tvShowDetails: MutableLiveData<TVShowDetailsResponse?> by lazy {
         MutableLiveData<TVShowDetailsResponse?>()
     }
-
-
 
     fun updateFilter(filter : String) = effect {
             selectedFilter.value = filter
@@ -79,7 +69,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
         }
     }
 
-
     fun getTVShowDetails(tvShowId : String) = effect{
         repository.getTVShowDetails(tvShowId.toInt()).collect{
             response -> tvShowDetails.postValue(response)
@@ -90,7 +79,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
         }
     }
 
-
     fun deleteSearchResults()= effect{
         repository.deleteSearchResults()
     }
@@ -100,7 +88,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
         _tvShows.value = repository.getTVShowsPerFilter(selectedFilter.value).cachedIn(GlobalScope)
         _isLoading.value = false
     }
-
 
 
     private fun performSearching(query : String) : Flow<PagingData<TVShow>> {
@@ -132,9 +119,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
             }
             .launchIn(viewModelScope)
     }
-
-
-
 
     sealed class TVShowDetailState {
         object Empty : TVShowDetailState()

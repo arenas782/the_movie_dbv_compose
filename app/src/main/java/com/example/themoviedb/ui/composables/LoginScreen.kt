@@ -30,8 +30,7 @@ fun LoginScreen() {
 
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
-        // Creating a Button that on-click
-        // implements an Intent to go to SecondActivity
+
         Image(painterResource(R.drawable.icon_logo),"content description")
         Text(
             text ="Mubi",

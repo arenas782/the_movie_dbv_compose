@@ -1,7 +1,6 @@
 package com.example.themoviedb.ui.composables
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -52,7 +51,6 @@ fun FavoriteTVShowItem(tvShowData: TVShow, onClick: () -> Unit) {
 
             ){
 
-
                 Box(contentAlignment = Alignment.Center) {
                     val imageUrl = if (tvShowData.poster_path == null) Constants.BASE_URL_POSTS.plus(tvShowData.backdrop_path) else Constants.BASE_URL_POSTS.plus(tvShowData.poster_path)
 
@@ -61,13 +59,10 @@ fun FavoriteTVShowItem(tvShowData: TVShow, onClick: () -> Unit) {
                             .data(imageUrl)
                             .size(Size.ORIGINAL) // Set the target size to load the image at.
                             .crossfade(true)
-
                             .build()
                     )
 
                     if (painter.state !is AsyncImagePainter.State.Success) {
-
-                        Log.e("PAINTER STATE LOADING","${painter.state}")
                         Icon(
                             painter = painterResource(id = R.drawable.placeholder),
                             contentDescription = null,

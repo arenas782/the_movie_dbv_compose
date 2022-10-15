@@ -26,10 +26,8 @@ class TVShowsRepository @Inject constructor(private val db: AppDatabase, private
 
     suspend fun updateTVShowFavorite(tvShowId: Int) {
         try {
-            Log.e("TAG", "Updating favorite $tvShowId")
             db.tvShowDAO().getCurrentTVShow(tvShowId).take(1).collectLatest { actualTVShow ->
                 db.tvShowDAO().updateFavorite(tvShowId, if (actualTVShow.is_favorite == 1) 0 else 1)
-                Log.e("TAG", "TV Show $actualTVShow")
             }
         } catch (e: Exception) {
             Log.e("TAG", "$e.localizedMessage")

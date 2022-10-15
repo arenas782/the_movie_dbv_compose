@@ -16,15 +16,12 @@ class LoginScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Calling the composable function
-            // to display element and its contents
             val navController = rememberNavController()
             SetupNavGraph(navController = navController)
         }
     }
 
 
-    // the Android Studio IDE emulator
     @Preview(showBackground = true)
     @Composable
     fun DefaultPreview() {
@@ -45,8 +42,6 @@ class LoginScreenActivity : ComponentActivity() {
             }
         }
     }
-
-
 
     sealed class DestinationScreen(val route: String) {
         object SplashScreenDest : DestinationScreen(route = "splash_screen")
