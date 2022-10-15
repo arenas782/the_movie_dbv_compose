@@ -101,9 +101,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
-
-
-
+    
 
     //navigation and viewmodel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -118,7 +116,6 @@ dependencies {
 
     //swipe decorator
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
-
 
     //coil
     implementation("io.coil-kt:coil:2.1.0")
@@ -157,7 +154,5 @@ dependencies {
 
 
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-
-
 
 }
