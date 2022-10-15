@@ -1,10 +1,7 @@
 package com.example.themoviedb.ui.tvShows
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,14 +16,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
@@ -38,12 +31,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.databinding.FragmentTvShowsBinding
 import com.example.themoviedb.ui.base.BaseFragment
-import com.example.themoviedb.ui.composables.ChipFilter
-import com.example.themoviedb.ui.composables.LoadingIndicator
-import com.example.themoviedb.ui.composables.SearchAppBar
-import com.example.themoviedb.ui.composables.TVShowItem
+import com.example.themoviedb.ui.composables.*
 import com.example.themoviedb.ui.theme.AppTheme
-import com.example.themoviedb.ui.theme.Purple500
+import com.example.themoviedb.ui.tvShows.enums.SearchWidgetState
 import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -92,6 +82,7 @@ class TVShowsFragment  : BaseFragment(){
                 onCloseClicked = {
                                 viewModel.updateSearchWidgetState(SearchWidgetState.CLOSED)
                 },
+                viewModel = viewModel
             )},
             content = {
                 MainComponent()
@@ -99,46 +90,8 @@ class TVShowsFragment  : BaseFragment(){
         )
     }
 
-    @Composable
-    fun TVShowsAppBar(
-        searchWidgetState: SearchWidgetState,
-        searchTextState : String,
-        onTextChanged : (String) -> Unit,
-        onCloseClicked : () -> Unit,
-    ){
-        when (searchWidgetState){
-            SearchWidgetState.CLOSED -> {
-                TopAppBar()
-            }
-            SearchWidgetState.OPENED -> {
-                SearchAppBar(
-                    text = searchTextState,
-                    onTextChanged = onTextChanged,
-                    onCloseClicked = onCloseClicked,
-                )
-            }
-        }
-    }
 
-    @Composable
-    private fun TopAppBar() {
-        TopAppBar(
 
-            title = { Text(text = "TV Shows") },
-            actions = {
-                IconButton(onClick = {
-                    viewModel.updateSearchWidgetState(SearchWidgetState.OPENED)
-                }) {
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Buscar")
-                }
-                IconButton(onClick = { }) {
-                    Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Buscar")
-                }
-            },
-            backgroundColor = Purple500,
-            contentColor = Color.White
-        )
-    }
 
 
     @Composable
@@ -218,14 +171,12 @@ class TVShowsFragment  : BaseFragment(){
         }
     }
 
-
-
     @Composable
     fun Filters(){
         val selectedFilter = viewModel.selectedFilter.value
         LazyRow(modifier = Modifier.padding(top = 10.dp, start = 8.dp, bottom = 8.dp)){
-            items(Filters.values()){ filter ->
-                if (filter.value != Filters.SEARCH.value){
+            items(com.example.themoviedb.ui.tvShows.enums.Filters.values()){ filter ->
+                if (filter.value != com.example.themoviedb.ui.tvShows.enums.Filters.SEARCH.value){
                     ChipFilter(
                         filterName = filter.value,
                         isSelected = selectedFilter == filter.value,

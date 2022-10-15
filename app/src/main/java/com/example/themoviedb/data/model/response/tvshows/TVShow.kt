@@ -30,8 +30,10 @@ data class TVShow(
     @field:Json(name = "vote_average")
     val vote_average: Float? = null,
 
-    @ColumnInfo(name = "tv_show_type") var tv_show_type: String,
+    var tv_show_type: String,
 
     @ColumnInfo(name = "created_at") var createdAt: Long,
+
+    var is_favorite: Int,
 
     )

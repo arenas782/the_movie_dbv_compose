@@ -1,4 +1,4 @@
-package com.example.themoviedb.ui.tvShows
+package com.example.themoviedb.ui.tvShows.enums
 
 enum class Filters(val value : String){
     TOP_RATED("Top rated"),

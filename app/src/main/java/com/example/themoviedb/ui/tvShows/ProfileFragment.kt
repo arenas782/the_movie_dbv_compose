@@ -1,9 +1,7 @@
 package com.example.themoviedb.ui.tvShows
 
 import android.annotation.SuppressLint
-import android.media.Rating
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -27,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
@@ -35,10 +30,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.themoviedb.R
-
-import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
-import com.example.themoviedb.data.model.response.tvshows.TVShowSeason
+import com.example.themoviedb.databinding.FragmentProfileBinding
 import com.example.themoviedb.databinding.FragmentTvShowDetailsBinding
 import com.example.themoviedb.ui.base.BaseFragment
 import com.example.themoviedb.ui.composables.RatingBar
@@ -46,7 +38,6 @@ import com.example.themoviedb.ui.composables.TVShowSeason
 import com.example.themoviedb.ui.theme.AppTheme
 import com.example.themoviedb.ui.tvShows.viewmodel.TVShowsViewModel
 import com.example.themoviedb.utils.Constants
-import com.example.themoviedb.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
@@ -54,11 +45,10 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 
 @AndroidEntryPoint
-class TVShowDetailsFragment : BaseFragment() {
+class ProfileFragment : BaseFragment() {
     private val viewModel: TVShowsViewModel by viewModels()
-    private var _binding: FragmentTvShowDetailsBinding? = null
+    private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private val args: TVShowDetailsFragmentArgs by navArgs()
 
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -67,9 +57,8 @@ class TVShowDetailsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTvShowDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
-        viewModel.getTVShowDetails(args.tvShowId!!)
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -89,7 +78,6 @@ class TVShowDetailsFragment : BaseFragment() {
         val state = rememberCollapsingToolbarScaffoldState()
         val tvShowDetails = viewModel.tvShowDetails.observeAsState().value
         val progress = state.toolbarState.progress // how much the toolbar is expanded (0: collapsed, 1: expanded)
-        val currentTVShow = viewModel.currentTVShowDetails.observeAsState().value
 
         if (tvShowDetails!= null){
             val seasons = tvShowDetails.seasons
@@ -134,25 +122,10 @@ class TVShowDetailsFragment : BaseFragment() {
                     RatingBar(rating = tvShowDetails.vote_average*0.5f, modifier = Modifier
                         .padding(top = 160.dp, start = 16.dp)
                         .alpha(if (progress < 1) 0f else 1f))
-                    Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween){
-                        IconButton(onClick = {
-                            findNavController().navigateUp()
-                        }) {
-                            Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
-
-                        }
-                        IconButton(onClick = {
-                            Log.e("Favorite","click")
-                            viewModel.updateFavorite()
-                        }) {
-                            if (currentTVShow != null) {
-                                when (currentTVShow.is_favorite){
-                                    0 -> {Icon(Icons.Default.FavoriteBorder, "Favorite", tint = Color.Yellow)}
-                                    else -> {Icon(Icons.Default.Favorite, "Favorite", tint = Color.Yellow)}
-                                }
-                            }
-                        }
+                    IconButton(onClick = {
+                        findNavController().navigateUp()
+                    }) {
+                        Icon(Icons.Default.ArrowBack, "Open/Close menu", tint = Color.White)
                     }
                 }) {
 
@@ -165,9 +138,7 @@ class TVShowDetailsFragment : BaseFragment() {
                             text = "Summary",
                             style = TextStyle(color = MaterialTheme.colors.primary, fontSize = 18.sp),
                         )
-
                     }
-
                     item {
                         Text(
                             modifier = Modifier

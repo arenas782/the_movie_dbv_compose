@@ -1,5 +1,6 @@
 package com.example.themoviedb.ui.composables
 
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,7 @@ import com.example.themoviedb.utils.PreferencesManager
 @Composable
 fun LoginScreen() {
     val mContext = LocalContext.current
+    val activity = (LocalContext.current as? Activity)
 
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
@@ -40,6 +42,7 @@ fun LoginScreen() {
         Button(onClick = {
             PreferencesManager.getInstance().putBoolean(Constants.LOGGED_IN,true)
             mContext.startActivity(Intent(mContext, MainActivity::class.java))
+            activity?.finish()
         },
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
             modifier = Modifier

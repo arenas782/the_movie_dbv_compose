@@ -1,4 +1,4 @@
-package com.example.themoviedb.ui.tvShows
+package com.example.themoviedb.ui.tvShows.enums
 
 enum class SearchWidgetState {
     OPENED,

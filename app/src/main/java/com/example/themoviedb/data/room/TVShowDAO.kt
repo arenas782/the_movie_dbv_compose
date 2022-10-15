@@ -1,12 +1,9 @@
 package com.example.themoviedb.data.room
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.themoviedb.data.model.response.tvshows.TVShow
-import com.example.themoviedb.ui.tvShows.Filters
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -23,18 +20,37 @@ interface TVShowDAO {
     @Query("DELETE FROM tvshow WHERE id = :id")
     suspend fun deleteTVShowById(id: Int)
 
+
     @Query("DELETE FROM tvshow WHERE tv_show_type = 'Search'")
     suspend fun deleteSearches()
+
+    @Query("UPDATE tvshow set is_favorite = :isFavorite where id = :tvShowId" )
+    suspend fun updateFavorite(tvShowId : Int, isFavorite : Int)
+
+    @Update
+    fun updateTVShow(tvShow : TVShow) // no need of suspend
+
+
+
+    @Query("SELECT * from tvshow where is_favorite = :is_favorite" )
+    fun getFavorites(is_favorite: Int) : Flow<List<TVShow>>
+
+    @Query("SELECT * from tvshow where id = :id" )
+    fun getCurrentTVShow(id : Int) : Flow<TVShow>
+
+
 
     suspend fun insertAllTVShows(TVShows: List<TVShow?>?, tvShowType: String){
 
         TVShows?.forEach {
             insertTVShow(it.apply {
                 this!!.tv_show_type = tvShowType
-                this!!.createdAt = System.currentTimeMillis()
+                this.createdAt = System.currentTimeMillis()
             })
         }
     }
+
+
 
     @Query("SELECT COUNT(id) from tvshow where tv_show_type= :tvShowType")
     suspend fun countByTVShowType(tvShowType : String): Int

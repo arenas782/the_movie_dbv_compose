@@ -6,6 +6,9 @@ data class TVShowDetailsResponse(
     @field:Json(name = "name")
     val name : String,
 
+    @field:Json(name = "id")
+    val id : Int,
+
     @field:Json(name = "backdrop_path")
     val backdrop_path : String,
 

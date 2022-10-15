@@ -10,8 +10,8 @@ import com.example.themoviedb.data.api.TVService
 import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.data.model.response.tvshows.TVShowDetailsResponse
 import com.example.themoviedb.data.repository.TVShowsRepository
-import com.example.themoviedb.ui.tvShows.Filters
-import com.example.themoviedb.ui.tvShows.SearchWidgetState
+import com.example.themoviedb.ui.tvShows.enums.Filters
+import com.example.themoviedb.ui.tvShows.enums.SearchWidgetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -32,6 +32,7 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     private val _searchTextState = MutableStateFlow("")
     val searchTextState  = _searchTextState.asStateFlow()
 
+
     fun updateSearchWidgetState(newValue : SearchWidgetState){
         _searchWidgetState.value = newValue
     }
@@ -41,9 +42,18 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
 
 
+    val currentTVShowDetails : MutableLiveData<TVShow?> by lazy {
+        MutableLiveData<TVShow?>()
+    }
+
+
 
     private val _tvShows = MutableStateFlow(emptyFlow<PagingData<TVShow>>())
     val tvshows: StateFlow<Flow<PagingData<TVShow>>> = _tvShows.asStateFlow()
+
+
+    private val _localTVShow = MutableStateFlow <Int?>(null)
+    val localTVShow = _localTVShow.asStateFlow()
 
 
 
@@ -61,11 +71,22 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
             selectedFilter.value = filter
     }
 
+    fun updateFavorite() =effect{
+        try{
+            repository.updateTVShowFavorite(localTVShow.value!!)
+        }catch (e : Exception){
+            Log.e("TAG", "$e.localizedMessage")
+        }
+    }
 
 
     fun getTVShowDetails(tvShowId : String) = effect{
         repository.getTVShowDetails(tvShowId.toInt()).collect{
             response -> tvShowDetails.postValue(response)
+            _localTVShow.value = response.id
+            repository.getCurrentTVShow(tvShowId.toInt()).collect{
+                currentTVShowDetails.postValue(it)
+            }
         }
     }
 
@@ -113,19 +134,6 @@ class TVShowsViewModel @Inject constructor(private val repository : TVShowsRepos
     }
 
 
-
-
-
-//    fun getMovieDetails(movieId : Int) = liveData(Dispatchers.Main) {
-//            emit(Resource.loading(data = null))
-//            try {
-//                val movieDetails = repository.getMovieDetails(tvShowId = movieId)
-//                Log.e("movie",movieDetails.toString())
-//                emit(Resource.success(data = movieDetails))
-//            } catch (exception: Exception) {
-//                emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
-//            }
-//    }
 
 
     sealed class TVShowDetailState {

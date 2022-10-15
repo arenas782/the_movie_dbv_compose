@@ -1,5 +1,6 @@
 package com.example.themoviedb.ui.composables
 
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,8 @@ import com.example.themoviedb.utils.PreferencesManager
 
 @Composable
 fun SplashScreen(navController: NavHostController) {
+    val activity = (LocalContext.current as? Activity)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,9 +57,16 @@ fun SplashScreen(navController: NavHostController) {
                 if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying) {
                     if(PreferencesManager.getInstance().getBoolean(Constants.LOGGED_IN,false)){
                         LocalContext.current.startActivity(Intent( LocalContext.current, MainActivity::class.java))
+                        activity?.finish()
+
                     }
-                    else
-                        navController.navigate(LoginScreenActivity.DestinationScreen.LoginScreenDest.route)
+                    else{
+                        navController.navigate(LoginScreenActivity.DestinationScreen.LoginScreenDest.route) {
+                            popUpTo(LoginScreenActivity.DestinationScreen.SplashScreenDest.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 }
             }
 

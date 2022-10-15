@@ -10,7 +10,7 @@ import com.example.themoviedb.data.model.response.tvshows.TVShow
 import com.example.themoviedb.data.model.RemoteKeys
 import com.example.themoviedb.data.model.response.tvshows.LatestTVShowsResponse
 import com.example.themoviedb.data.room.AppDatabase
-import com.example.themoviedb.ui.tvShows.Filters
+import com.example.themoviedb.ui.tvShows.enums.Filters
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
