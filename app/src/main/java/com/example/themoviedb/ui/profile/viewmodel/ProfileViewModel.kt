@@ -1,4 +1,4 @@
-package com.example.themoviedb.ui.tvShows.viewmodel
+package com.example.themoviedb.ui.profile.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -21,6 +21,13 @@ class ProfileViewModel @Inject constructor(private val repository : TVShowsRepos
 
     private val _favoriteTVShows = MutableStateFlow(emptyList<TVShow>())
     val favoriteTVShows: StateFlow<List<TVShow>> = _favoriteTVShows
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
+
+    fun updateShowDialog(value : Boolean ){
+        _showDialog.value = value
+    }
 
     private fun effect(block: suspend () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) { block() }    // 4

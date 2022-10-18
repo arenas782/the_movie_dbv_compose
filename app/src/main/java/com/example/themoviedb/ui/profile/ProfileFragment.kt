@@ -1,9 +1,10 @@
-package com.example.themoviedb.ui.tvShows
+package com.example.themoviedb.ui.profile
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,9 +44,10 @@ import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentProfileBinding
 import com.example.themoviedb.ui.LoginScreenActivity
 import com.example.themoviedb.ui.base.BaseFragment
+import com.example.themoviedb.ui.composables.CustomDialog
 import com.example.themoviedb.ui.composables.FavoriteTVShowItem
 import com.example.themoviedb.ui.theme.AppTheme
-import com.example.themoviedb.ui.tvShows.viewmodel.ProfileViewModel
+import com.example.themoviedb.ui.profile.viewmodel.ProfileViewModel
 import com.example.themoviedb.utils.Constants
 import com.example.themoviedb.utils.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -99,7 +101,19 @@ class ProfileFragment : BaseFragment() {
     @Composable
     private fun Content(){
         val favoriteTVShows by viewModel.favoriteTVShows.collectAsState()
+        val showDialog by viewModel.showDialog.collectAsState()
         val mContext : Context = LocalContext.current
+
+        if(showDialog)
+            CustomDialog(value = "Are you sure you want to leave?", setShowDialog = {
+                viewModel.updateShowDialog(it)
+            }){
+                viewModel.updateShowDialog(false)
+                PreferencesManager.getInstance().putBoolean(Constants.LOGGED_IN,false)
+                requireContext().startActivity(Intent(mContext, LoginScreenActivity::class.java))
+                requireActivity().finish()
+            }
+
         Column(modifier = Modifier.fillMaxSize()) {
             ConstraintLayout() {
                 val (profilePicture,name,user,favoritesText,favoriteList,logoutButton) = createRefs()
@@ -132,8 +146,8 @@ class ProfileFragment : BaseFragment() {
                         fontSize = 18.sp)
                 )
                 Box(modifier = Modifier
-                    .fillMaxWidth().
-                        height(260.dp)
+                    .fillMaxWidth()
+                    .height(260.dp)
                     .constrainAs(favoriteList) {
                         bottom.linkTo(logoutButton.top, margin = 16.dp)
                         top.linkTo(favoritesText.bottom, margin = 16.dp)
@@ -156,9 +170,8 @@ class ProfileFragment : BaseFragment() {
                     .fillMaxWidth()
                     .padding(16.dp)
                     , onClick = {
-                        PreferencesManager.getInstance().putBoolean(Constants.LOGGED_IN,false)
-                        requireContext().startActivity(Intent(mContext, LoginScreenActivity::class.java))
-                        requireActivity().finish()
+                                viewModel.updateShowDialog(true)
+
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
                     ) {
@@ -193,8 +206,6 @@ class ProfileFragment : BaseFragment() {
             ){
                 Icon( imageVector = Icons.Filled.Edit, contentDescription = "edit", tint = Color.White,)
             }
-
         }
     }
-
 }
